@@ -117,6 +117,38 @@ controls.minPolarAngle = Math.PI/2
 controls.maxPolarAngle = Math.PI/2
 
 
+// Track touch movement to differentiate between scrolling & rotating
+let touchStartY = 0;
+let touchStartX = 0;
+let isDragging = false;
+
+window.addEventListener("touchstart", (e) => {
+    touchStartY = e.touches[0].clientY;
+    touchStartX = e.touches[0].clientX;
+    isDragging = false; // Reset on new touch
+});
+
+window.addEventListener("touchmove", (e) => {
+    const touchCurrentY = e.touches[0].clientY;
+    const touchCurrentX = e.touches[0].clientX;
+
+    const deltaY = Math.abs(touchCurrentY - touchStartY);
+    const deltaX = Math.abs(touchCurrentX - touchStartX);
+
+    if (deltaX > deltaY) {
+        // More horizontal movement -> OrbitControls should work
+        isDragging = true;
+        e.preventDefault(); // Prevent scrolling when rotating model
+    }
+});
+
+// Re-enable scrolling when touch ends
+window.addEventListener("touchend", () => {
+    isDragging = false;
+});
+
+
+
 // Add Lights
 const ambientLight = new THREE.AmbientLight(0xffffff, 1.0);
 scene.add(ambientLight);
